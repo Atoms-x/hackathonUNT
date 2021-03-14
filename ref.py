@@ -2,20 +2,24 @@ import pygame
 import random
 import os, sys
 from pygame.locals import *
+import pygame.font
+from pygame import mixer
 import time
+from time import sleep, time
 
 
 #WHITE = (255, 255, 255)
 #GREEN = (20, 255, 140)
 #BLACK = (0, 0, 0)
-
 pygame.init()
+pygame.font.init()
+
 screen = pygame.display.set_mode((1980,1020))
-pygame.display.set_caption('Slap Dat Monkay')
+pygame.display.set_caption('Beat Dat Monkay')
 background = pygame.Surface(screen.get_size())
 background = background.convert()
 background.fill((255,255,255))
-
+# background.fill((0,0,0))
 
 clock = pygame.time.Clock()
 
@@ -37,6 +41,7 @@ class Fist(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image('hank.png', -1)
+        self.rect.midright = 1700, 540
         self.speed = 0
         self.slapping = 0
     
@@ -51,10 +56,11 @@ class Fist(pygame.sprite.Sprite):
             self.slapping = 1
             hitbox = self.rect.inflate(1,1)
             return hitbox.colliderect(target.rect)
-        
             
     def unslap(self):
         self.slapping = 0
+
+
 
 class Monkay(pygame.sprite.Sprite):
 
@@ -67,33 +73,8 @@ class Monkay(pygame.sprite.Sprite):
         self.move = 9
         self.yeet = 0
         self.dizzy = 0
+        self.state = self.image.get_rect()
 
-    # def update(self):
-    #     if self.dizzy:
-    #         self._spin()
-    #     else:
-    #         self._walk()
-    
-    # def _walk(self):
-    #     newpos = self.rect.move((self.move, 0))
-    #     if not self.area.contains(newpos):
-    #         if self.rect.left < self.area.left or \
-    #                 self.rect.right > self.area.right:
-    #             self.move = -self.move
-    #             newpos = self.rect.move((self.move, 0))
-    #             self.image = pygame.transform.flip(self.image, 1, 0)
-    #         self.rect = newpos
-    
-    # def _spin(self):
-    #     center = self.rect.center   
-    #     self.dizzy += 12
-    #     if self.dizzy >= 360:
-    #         self.dizzy = 0
-    #         self.image = self.original
-    #     else:
-    #         rotate = pygame.transform.rotate
-    #         self.image = rotate(self.original, self.dizzy)
-    #     self.rect = self.image.get_rect(center=center)
 
     def slapped(self):
         if not self.dizzy:
@@ -101,13 +82,24 @@ class Monkay(pygame.sprite.Sprite):
             self.original = self.image
 
     def move_the_monkey(self):
-        self.rect.move_ip(-5,0)
+        # print(f'Move -- > {self.rect}')
+        self.rect.move_ip(-1000, 0)
+        font = pygame.font.Font(None, 100) # None can be a font file instead
+        text = font.render("BEAT ME MORE SNAKE, MORE", 1, (0, 0, 0))
+        background.blit(text, (0,0))
+        # print(f'Rect -> {self.rect} and State -> {self.state}')
+
 
     def reset_the_monkey(self):
-        self.rect.move_ip(5,0)
+        # print(f'Reset -- > {self.rect}')
+     
+        self.rect.x = random.randrange(100,1000)
+        self.rect.y = random.randrange(100,1000)
 
-
-
+class Unit():
+    def __init__(self):
+        self.last = pygame.time.get_ticks()
+        self.cooldown = 300
 # if pygame.font:
 #     font = pygame.font.Font(None, 36)
 #     text = font.render("SLAP DAT MONKAY FOO", 1, (10,10,10))
@@ -119,25 +111,26 @@ pygame.display.flip()
 
 fist = Fist()
 monkay = Monkay()
+
+
 allsprites = pygame.sprite.RenderPlain((fist, monkay))
 
+# font = pygame.font.Font(None, 36) # None can be a font file instead
+# text = font.render("MONKEY HAS BEEN YEETED", 1, (0, 0, 0))
+# background.blit(text, (0,0))
 
+
+last_time = time()
 
 while True:
-    clock.tick(30)
-    for event in pygame.event.get():
-        # if event.type == pygame.MOUSEBUTTONDOWN:
-        #     if fist.slap(monkay):
-        #         monkay.slapped()
-        # elif event.type == pygame.MOUSEBUTTONUP:
-        #     fist.unslap()
-        
+    clock.tick(60)
+    for event in pygame.event.get():        
         if fist.rect.colliderect(monkay.rect):
-            print(f'{fist.rect} <--> {monkay.rect}.')
-            print('Detection Collision')
-            # monkay.slapped()
             monkay.move_the_monkey()
-            # monkay.reset_the_monkey()
+            monkay.reset_the_monkey()
+            
+
+
     allsprites.update() 
 
     screen.blit(background, (0,0))
