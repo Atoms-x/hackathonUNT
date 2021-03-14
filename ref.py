@@ -2,6 +2,7 @@ import pygame
 import random
 import os, sys
 from pygame.locals import *
+import time
 
 
 #WHITE = (255, 255, 255)
@@ -11,10 +12,9 @@ from pygame.locals import *
 pygame.init()
 screen = pygame.display.set_mode((1980,1020))
 pygame.display.set_caption('Slap Dat Monkay')
-#display_rect = display.get_rect()
 background = pygame.Surface(screen.get_size())
 background = background.convert()
-background.fill((125,125,125))
+background.fill((255,255,255))
 
 
 clock = pygame.time.Clock()
@@ -36,13 +36,12 @@ def load_image(name, colorkey=None):
 class Fist(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = load_image('muhand.jpeg', -1)
+        self.image, self.rect = load_image('hank.png', -1)
         self.speed = 0
         self.slapping = 0
     
     def update(self):
         pos = pygame.mouse.get_pos()
-        # print(f'The position is -> {pos}.')
         self.rect.midtop = pos
         if self.slapping:
             self.rect.move_ip(0, 1)
@@ -51,7 +50,6 @@ class Fist(pygame.sprite.Sprite):
         if not self.slapping:
             self.slapping = 1
             hitbox = self.rect.inflate(1,1)
-            # print(f'Hitbox is -> {hitbox}.')
             return hitbox.colliderect(target.rect)
         
             
@@ -70,32 +68,32 @@ class Monkay(pygame.sprite.Sprite):
         self.yeet = 0
         self.dizzy = 0
 
-    def update(self):
-        if self.dizzy:
-            self._spin()
-        else:
-            self._walk()
+    # def update(self):
+    #     if self.dizzy:
+    #         self._spin()
+    #     else:
+    #         self._walk()
     
-    def _walk(self):
-        newpos = self.rect.move((self.move, 0))
-        if not self.area.contains(newpos):
-            if self.rect.left < self.area.left or \
-                    self.rect.right > self.area.right:
-                self.move = -self.move
-                newpos = self.rect.move((self.move, 0))
-                self.image = pygame.transform.flip(self.image, 1, 0)
-            self.rect = newpos
+    # def _walk(self):
+    #     newpos = self.rect.move((self.move, 0))
+    #     if not self.area.contains(newpos):
+    #         if self.rect.left < self.area.left or \
+    #                 self.rect.right > self.area.right:
+    #             self.move = -self.move
+    #             newpos = self.rect.move((self.move, 0))
+    #             self.image = pygame.transform.flip(self.image, 1, 0)
+    #         self.rect = newpos
     
-    def _spin(self):
-        center = self.rect.center   
-        self.dizzy += 12
-        if self.dizzy >= 360:
-            self.dizzy = 0
-            self.image = self.original
-        else:
-            rotate = pygame.transform.rotate
-            self.image = rotate(self.original, self.dizzy)
-        self.rect = self.image.get_rect(center=center)
+    # def _spin(self):
+    #     center = self.rect.center   
+    #     self.dizzy += 12
+    #     if self.dizzy >= 360:
+    #         self.dizzy = 0
+    #         self.image = self.original
+    #     else:
+    #         rotate = pygame.transform.rotate
+    #         self.image = rotate(self.original, self.dizzy)
+    #     self.rect = self.image.get_rect(center=center)
 
     def slapped(self):
         if not self.dizzy:
@@ -103,7 +101,10 @@ class Monkay(pygame.sprite.Sprite):
             self.original = self.image
 
     def move_the_monkey(self):
-        self.rect.move_ip(0,100)
+        self.rect.move_ip(-5,0)
+
+    def reset_the_monkey(self):
+        self.rect.move_ip(5,0)
 
 
 
@@ -125,18 +126,18 @@ allsprites = pygame.sprite.RenderPlain((fist, monkay))
 while True:
     clock.tick(30)
     for event in pygame.event.get():
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            # print(f'func call -> {fist.slap(monkay)}.')
-            if fist.slap(monkay):
-                print('Inside')
-                monkay.slapped()
-                print('Detection Found')
-        elif event.type == pygame.MOUSEBUTTONUP:
-            fist.unslap()
-            # print('Nope')
+        # if event.type == pygame.MOUSEBUTTONDOWN:
+        #     if fist.slap(monkay):
+        #         monkay.slapped()
+        # elif event.type == pygame.MOUSEBUTTONUP:
+        #     fist.unslap()
         
         if fist.rect.colliderect(monkay.rect):
-            monkay.slapped()
+            print(f'{fist.rect} <--> {monkay.rect}.')
+            print('Detection Collision')
+            # monkay.slapped()
+            monkay.move_the_monkey()
+            # monkay.reset_the_monkey()
     allsprites.update() 
 
     screen.blit(background, (0,0))
