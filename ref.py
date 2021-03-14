@@ -15,16 +15,21 @@ pygame.init()
 pygame.font.init()
 pygame.mixer.init()
 
+level_choices = [('files.jpg','bgmusic.wav'),('sf2.png', 'guile.wav')]
+
+choose = random.choice(level_choices)
+
 screen = pygame.display.set_mode((1920,1080))
 pygame.display.set_caption('Beat Dat Monkay')
 background = pygame.Surface(screen.get_size())
 background = background.convert()
 background.fill((255,255,255))
-bg = pygame.image.load(random.choice(["files.jpg","sf2.png"])).convert()
+bg = pygame.image.load(choose[0]).convert()
 background.blit(bg, (0,0))
 
 
-sound3 = pygame.mixer.Sound(random.choice(['bgmusic.wav', 'guile.wav']))
+
+sound3 = pygame.mixer.Sound(choose[1])
 sound3.play()   
 sound3.set_volume(0.25)
 
