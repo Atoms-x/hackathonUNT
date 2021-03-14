@@ -8,23 +8,30 @@ import time
 from time import sleep, time
 
 
-#WHITE = (255, 255, 255)
-#GREEN = (20, 255, 140)
-#BLACK = (0, 0, 0)
+# Help the soul that has to review this.
+# CTRL C TO YEET AND DELETE
+
 pygame.init()
 pygame.font.init()
+pygame.mixer.init()
 
-screen = pygame.display.set_mode((1980,1020))
+screen = pygame.display.set_mode((1920,1080))
 pygame.display.set_caption('Beat Dat Monkay')
 background = pygame.Surface(screen.get_size())
 background = background.convert()
 background.fill((255,255,255))
-# background.fill((0,0,0))
+bg = pygame.image.load(random.choice(["files.jpg","sf2.png"])).convert()
+background.blit(bg, (0,0))
+
+
+sound3 = pygame.mixer.Sound(random.choice(['bgmusic.wav', 'guile.wav']))
+sound3.play()   
+sound3.set_volume(0.25)
 
 clock = pygame.time.Clock()
 
 def load_image(name, colorkey=None):
-    fullname = name #os.path.join('data', name)
+    fullname = name 
     try:
         image = pygame.image.load(fullname)
     except pygame.error as message:
@@ -66,7 +73,7 @@ class Monkay(pygame.sprite.Sprite):
 
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = load_image('yeehaw.jpeg', -1)
+        self.image, self.rect = load_image('yeehaw.png', -1)
         screen = pygame.display.get_surface()
         self.area = screen.get_rect()
         self.rect.midleft = 200, 540
@@ -82,17 +89,20 @@ class Monkay(pygame.sprite.Sprite):
             self.original = self.image
 
     def move_the_monkey(self):
-        # print(f'Move -- > {self.rect}')
         self.rect.move_ip(-1000, 0)
         font = pygame.font.Font(None, 100) # None can be a font file instead
-        text = font.render("BEAT ME MORE SNAKE, MORE", 1, (0, 0, 0))
+        text = font.render("BEAT ME MORE SNAKE, BEAT ME MORE", 1, (0, 0, 0))
         background.blit(text, (0,0))
-        # print(f'Rect -> {self.rect} and State -> {self.state}')
+        fist_sounds = ["Strong_Punch-Mike_Koenig-574430706(1).wav", "hank-hill-bwah.wav"]
+        sound = pygame.mixer.Sound("Chimpanzee-SoundBible.com-901310467(2).wav")
+        sound.play()
+        choice = random.choice(fist_sounds)
+        sound2 = pygame.mixer.Sound(choice)
+        sound2.play()
+        sound.set_volume(0.05)
+       # print(f'Rect -> {self.rect} and State -> {self.state}')
 
-
-    def reset_the_monkey(self):
-        # print(f'Reset -- > {self.rect}')
-     
+    def reset_the_monkey(self):     
         self.rect.x = random.randrange(100,1000)
         self.rect.y = random.randrange(100,1000)
 
@@ -100,11 +110,7 @@ class Unit():
     def __init__(self):
         self.last = pygame.time.get_ticks()
         self.cooldown = 300
-# if pygame.font:
-#     font = pygame.font.Font(None, 36)
-#     text = font.render("SLAP DAT MONKAY FOO", 1, (10,10,10))
-#     textpos = text.get_rect(centerx=background.getwidth()/2)
-#     background.blit(text, textpos)
+
 
 screen.blit(background, (0,0))
 pygame.display.flip()
@@ -114,12 +120,6 @@ monkay = Monkay()
 
 
 allsprites = pygame.sprite.RenderPlain((fist, monkay))
-
-# font = pygame.font.Font(None, 36) # None can be a font file instead
-# text = font.render("MONKEY HAS BEEN YEETED", 1, (0, 0, 0))
-# background.blit(text, (0,0))
-
-
 last_time = time()
 
 while True:
